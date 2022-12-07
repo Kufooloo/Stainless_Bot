@@ -102,6 +102,12 @@ class MyClient(discord.Client):
                 f.close()
                 print('exported scoreboard')
                 print(scoreboard)
+        if os.path.exists('points.pkl'):
+            with open('points.pkl', 'wb') as f:
+                pickle.dump(scoreboard, f)
+                f.close()
+                print('exported points')
+                print(points)
 
     @my_background_task.before_loop
     async def before_my_task(self):
