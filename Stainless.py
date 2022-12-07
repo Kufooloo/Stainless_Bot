@@ -129,8 +129,7 @@ class MyClient(discord.Client):
                     f.close()
         await self.wait_until_ready()  # wait until the bot logs in
 
-client = discord.Client(activity=discord.Game(name='Fortnite'))
 intents = discord.Intents.default()
 intents.message_content = True
-client = MyClient(intents=intents)
+client = MyClient(intents=intents, activity=discord.Game(name='Fortnite'))
 client.run(token)
