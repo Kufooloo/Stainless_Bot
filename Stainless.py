@@ -92,6 +92,9 @@ class MyClient(discord.Client):
                 points[user_id] = 1
             else:
                 points[user_id] += 1
+            user = await self.fetch_user(userid)
+            username = user.display_name
+            print("added point to " + username + " new point total: " + points[user_id])
 
     @tasks.loop(seconds=60)    
     async def my_background_task(self):
@@ -104,7 +107,7 @@ class MyClient(discord.Client):
                 print(scoreboard)
         if os.path.exists('points.pkl'):
             with open('points.pkl', 'wb') as f:
-                pickle.dump(scoreboard, f)
+                pickle.dump(points, f)
                 f.close()
                 print('exported points')
                 print(points)
@@ -129,5 +132,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run(token)
 client = discord.Client(activity=discord.Game(name='Fortnite'))
+client.run(token)
