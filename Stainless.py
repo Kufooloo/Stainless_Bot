@@ -94,7 +94,7 @@ class MyClient(discord.Client):
                 points[user_id] += 1
             user = await self.fetch_user(user_id)
             username = user.display_name
-            print("added point to " + username + " new point total: " + points[user_id])
+            print("added point to " + username + " new point total: " + str(points[user_id]))
 
     @tasks.loop(seconds=60)    
     async def my_background_task(self):
