@@ -9,11 +9,15 @@ import datetime
 #import the token from a file named bot_token
 from bot_token import token, prefix, channel_id
 scoreboard = {}
+points = {}
 with open('exported_scoreboard.pkl', 'rb') as f:
     scoreboard = pickle.load(f)
     f.close()
+with open('exported_points.pkl', 'rb') as f:
+    points = pickle.load(f)
+    f.close()
 #dictionary syntax userid: [number of days participating, total time, dict of all dates]
-
+#points syntax {userid : point count}
 
 
 
@@ -24,7 +28,6 @@ class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
-        
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
@@ -80,6 +83,13 @@ class MyClient(discord.Client):
                     average_time = scoreboard[lowest][1]/scoreboard[lowest][0]
                     await message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
                     temp.pop(lowest)
+        else:
+            user_id  message.author.id
+            if points.get(user_id) is None:
+                points[user_id] = 1
+            else:
+                points[user_id] += 1
+            
 
     @tasks.loop(seconds=60)    
     async def my_background_task(self):
@@ -99,6 +109,9 @@ class MyClient(discord.Client):
                 with open('exported_scoreboard.pkl', 'rb') as f:
                     scoreboard = pickle.load(f)
                     f.close()
+        with open('exported_points.pkl', 'rb') as f:
+            points = pickle.load(f)
+            f.close()
         await self.wait_until_ready()  # wait until the bot logs in
 
 intents = discord.Intents.default()
