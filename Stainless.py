@@ -92,7 +92,7 @@ class MyClient(discord.Client):
                 points[user_id] = 1
             else:
                 points[user_id] += 1
-            user = await self.fetch_user(userid)
+            user = await self.fetch_user(user_id)
             username = user.display_name
             print("added point to " + username + " new point total: " + points[user_id])
 
