@@ -1,6 +1,8 @@
 #this is the token
 bot_token.py
 
+exported_scoreboard.pkl
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
