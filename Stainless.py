@@ -9,9 +9,10 @@ import datetime
 #import the token from a file named bot_token
 from bot_token import token, prefix, channel_id
 scoreboard = {}
-with open('exported_scoreboard.pkl', 'rb') as f:
-    scoreboard = pickle.load(f)
-    f.close()
+if os.path.getsize('exported_scoreboard.pkl') > 0:
+    with open('exported_scoreboard.pkl', 'rb') as f:
+        scoreboard = pickle.load(f)
+        f.close()
 #dictionary syntax userid: [number of days participating, total time, dict of all dates]
 
 
@@ -96,6 +97,7 @@ class MyClient(discord.Client):
     #loads the scoreboard from the .pkl file
         if os.path.exists('exported_scoreboard.pkl'):
             if os.path.getsize('exported_scoreboard.pkl') > 0:
+                print("file is larger than 0")
                 with open('exported_scoreboard.pkl', 'rb') as f:
                     scoreboard = pickle.load(f)
                     f.close()
