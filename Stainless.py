@@ -124,3 +124,4 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 client.run(token)
+client = discord.Client(activity=discord.Game(name='Fortnite'))
