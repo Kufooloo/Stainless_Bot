@@ -13,7 +13,12 @@ if os.path.getsize('exported_scoreboard.pkl') > 0:
     with open('exported_scoreboard.pkl', 'rb') as f:
         scoreboard = pickle.load(f)
         f.close()
+if os.path.getsize('points.pkl') > 0:
+    with open('points.pkl', 'rb') as f:
+        scoreboard = pickle.load(f)
+        f.close()
 #dictionary syntax userid: [number of days participating, total time, dict of all dates]
+#points dict : {user_id : points}
 
 
 
@@ -99,6 +104,12 @@ class MyClient(discord.Client):
             if os.path.getsize('exported_scoreboard.pkl') > 0:
                 print("file is larger than 0")
                 with open('exported_scoreboard.pkl', 'rb') as f:
+                    scoreboard = pickle.load(f)
+                    f.close()
+        if os.path.exists('points.pkl'):
+            if os.path.getsize('points.pkl') > 0:
+                print("file is larger than 0")
+                with open('points.pkl', 'rb') as f:
                     scoreboard = pickle.load(f)
                     f.close()
         await self.wait_until_ready()  # wait until the bot logs in
