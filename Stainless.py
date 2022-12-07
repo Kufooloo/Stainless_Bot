@@ -77,7 +77,8 @@ class MyClient(discord.Client):
                     username = user.display_name
                     #print('username')
                     #print(username)
-                    await message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=(scoreboard[lowest][1]/scoreboard[lowest][0]))))
+                    average_time = scoreboard[lowest][1]/scoreboard[lowest][0]
+                    await message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
                     temp.pop(lowest)
 
     @tasks.loop(seconds=60)    
