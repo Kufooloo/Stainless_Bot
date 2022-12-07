@@ -7,16 +7,14 @@ import os
 
 #import the token from a file named bot_token
 from bot_token import token, prefix
+scoreboard = {}
+with open('exported_scoreboard.pkl', 'rb') as f:
+    scoreboard = pickle.load(f)
+    f.close()
+#dictionary syntax userid: [number of days participating, total time, dict of all dates]
 
-#dictionary syntax userid: [number of days participating, total time, dict of all dates
 
-if os.path.exists('exported_scoreboard.pkl'):
-    with open('exported_scoreboard.pkl', 'wb') as f:
-        scoreboard = pickle.load(f)
-        f.close()
-        
-else:
-    scoreboard = {}
+
 
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -25,6 +23,7 @@ class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
+        
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
@@ -53,13 +52,29 @@ class MyClient(discord.Client):
             await message.reply('Date: ' + date + ' Time: ' + time, mention_author=True)
             return
         if message.content.startswith(prefix+'sb'):
-            for i in scoreboard:
-                userid = int(i)
-                print(userid)
+            temp = {}
+            for x in scoreboard:
+                temp[x] = [scoreboard[x][0], scoreboard[x][1], scoreboard[x][2]]
+            #print('temp')
+            #print(temp)
+            #print('sb')
+            #print(scoreboard)
+            while len(temp) != 0:
+                lowest = list(temp.keys())[0]
+                #print(type(lowest))
+                #print(lowest)
+                for i in temp:
+                    if temp[i][1] < temp[lowest][1]:
+                        lowest = i
+                userid = lowest
+                #print('userid')
+                #print(userid)
                 user = await self.fetch_user(userid)
                 username = user.display_name
-                print(username)
-                await message.channel.send(username + ": " + str(scoreboard[i][1]))  
+                #print('username')
+                #print(username)
+                await message.channel.send(username + ": " + str(scoreboard[lowest][1]))
+                temp.pop(lowest)
 
     @tasks.loop(seconds=60)    
     async def my_background_task(self):
@@ -68,11 +83,17 @@ class MyClient(discord.Client):
                 pickle.dump(scoreboard, f)
                 f.close()
                 print('exported scoreboard')
+                print(scoreboard)
 
     @my_background_task.before_loop
     async def before_my_task(self):
+        if os.path.exists('exported_scoreboard.pkl'):
+            if os.path.getsize('exported_scoreboard.pkl') > 0:
+                with open('exported_scoreboard.pkl', 'rb') as f:
+                    scoreboard = pickle.load(f)
+                    f.close()
         await self.wait_until_ready()  # wait until the bot logs in
-
+        
 
 intents = discord.Intents.default()
 intents.message_content = True
