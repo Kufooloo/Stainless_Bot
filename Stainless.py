@@ -104,7 +104,7 @@ class MyClient(discord.Client):
                 print(scoreboard)
         if os.path.exists('points.pkl'):
             with open('points.pkl', 'wb') as f:
-                pickle.dump(scoreboard, f)
+                pickle.dump(points, f)
                 f.close()
                 print('exported points')
                 print(points)
