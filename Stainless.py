@@ -112,7 +112,6 @@ class MyClient(discord.Client):
                 with open('exported_scoreboard.pkl', 'rb') as f:
                     scoreboard = pickle.load(f)
                     f.close()
-
         if os.path.exists('points.pkl'):
             if os.path.getsize('points.pkl') > 0:
                 print("file is larger than 0")
