@@ -1,0 +1,3 @@
+token="NDUwMjA3Mzk2MTQ5NTkyMDY0.Gc-4X9.Iv8iFwfJxT0OmpAmMN1LMxcY2xQjRe2KSGlsuE"
+prefix='%'
+channel_id=945233108813348925
