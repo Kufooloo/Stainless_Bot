@@ -8,7 +8,7 @@ import datetime
 
 #import the token from a file named bot_token
 from config import token, prefix, channel_id
-
+start = datetime.datetime.now()
 scoreboard = {}
 points = {}
 if os.path.getsize('exported_scoreboard.pkl') > 0:
@@ -99,39 +99,17 @@ async def sb(ctx):
         await ctx.message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
         temp.pop(lowest)
 
+@bot.command()
+async def uptime(ctx):
+    now = datetime.datetime.now()
+    diffrence = now - start
+    await ctx.message.channel.send("Running for: " + str(diffrence))
 
-@tasks.loop(seconds=60)
-async def export(bot):
-#every 60s exports the scoreboard
-    if os.path.exists('exported_scoreboard.pkl'):
-        with open('exported_scoreboard.pkl', 'wb') as f:
-            pickle.dump(scoreboard, f)
-            f.close()
-            print('exported scoreboard')
-            print(scoreboard)
-    if os.path.exists('points.pkl'):
-        with open('points.pkl', 'wb') as f:
-            pickle.dump(points, f)
-            f.close()
-            print('exported points')
-            print(points)
-
-@export.before_loop
-async def before_my_task(bot):
-#loads the scoreboard from the .pkl file
-    if os.path.exists('exported_scoreboard.pkl'):
-        if os.path.getsize('exported_scoreboard.pkl') > 0:
-            print("file is larger than 0")
-            with open('exported_scoreboard.pkl', 'rb') as f:
-                scoreboard = pickle.load(f)
-                f.close()
-    if os.path.exists('points.pkl'):
-        if os.path.getsize('points.pkl') > 0:
-            print("file is larger than 0")
-            with open('points.pkl', 'rb') as f:
-                scoreboard = pickle.load(f)
-                f.close()
-    await bot.wait_until_ready()  # wait until the bot logs in
+@bot.command()
+@commands.is_owner()
+async def kill(ctx):
+    await bot.remove_cog('Export')
+    await bot.close()
 
 class Export(commands.Cog):
     def __init__(self, bot):
