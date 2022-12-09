@@ -77,11 +77,11 @@ class Wordle(commands.Cog):
         return
     @commands.command()
     async def score(self, ctx, member: discord.Member):
-        "Gives the score as well as other information on given user"
+        """Gives the score as well as other information on given user\n score @(user)"""
         userid = member.id
         print(f"{userid}'s score was requested by {ctx.message.author.display_name}")
         if scoreboard.get(userid) is None:
-            ctx.message.channel.send("User has no score")
+            await ctx.message.channel.send("User has no score")
             return
         average_time = str(datetime.timedelta(seconds=(scoreboard[userid][1]/scoreboard[userid][0])))
         message = str(f"{member.display_name} has participated for {scoreboard[userid][0]} days.\n")
@@ -134,6 +134,25 @@ class Wordle(commands.Cog):
                 username = user.display_name
                 print("added point to " + username + " new point total: " + str(points[user_id]))
                 return
+    @commands.command(aliases=['rm'])
+    @commands.is_owner()
+    async def remove(self, ctx, member: discord.Member, date: str):
+        """Removes the given date from the given users score\n rm @(user) {date}"""
+        userid = member.id
+        if scoreboard.get(userid) is None:
+            await ctx.message.channel.send("User has no score")
+            return
+        score = scoreboard[userid][2].get(date)
+        if score is None:
+            await ctx.message.channel.send("User did not play on this date")
+            return
+        scoreboard[userid][0] -= 1
+        scoreboard[userid][1] -= int(score)
+        scoreboard[userid][2].pop(date)
+        message = (str(f"Removed {date} from user {member.display_name}\n"))
+        message += str(f"Removed {score} from their total score and decremented their total day count by 1")
+        await ctx.message.channel.send(message)
+        return   
 
 class Admin(commands.Cog):
     def __init__(self, bot):
