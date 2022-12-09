@@ -43,6 +43,7 @@ class Wordle(commands.Cog):
     @commands.command(aliases=['sb'])
     async def scoreboard(self, ctx):
         """Displays the scoreboard"""
+        message = ""
         print("Command scoreboard detected.")
         temp = {}
         for x in scoreboard:
@@ -67,9 +68,12 @@ class Wordle(commands.Cog):
             #print('username')
             #print(username)
             average_time = scoreboard[lowest][1]/scoreboard[lowest][0]
-            await ctx.message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
+            #await ctx.message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
+            score = str(scoreboard[lowest][1])
+            message += str(f"{username}: {score} Average Time: {str(datetime.timedelta(seconds=average_time))}\n")
             print(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
             temp.pop(lowest) 
+        await ctx.message.channel.send(message)
         return
     @commands.Cog.listener()
     async def on_message(self, message):
