@@ -75,6 +75,22 @@ class Wordle(commands.Cog):
             temp.pop(lowest) 
         await ctx.message.channel.send(message)
         return
+    @commands.command()
+    async def score(self, ctx, member: discord.Member):
+        "Gives the score as well as other information on given user"
+        userid = member.id
+        print(f"{userid}'s score was requested by {ctx.message.author.display_name}")
+        if scoreboard.get(userid) is None:
+            ctx.message.channel.send("User has no score")
+            return
+        average_time = scoreboard[userid][1]/scoreboard[userid][0]
+        message = str(f"{member.display_name} has participated for {scoreboard[userid][0]} days.\n")
+        message += str(f"They have an average time of {average_time} and a total score of {scoreboard[userid][1]}\n")
+        message += "They have participated on:\n"
+        for i in scoreboard[userid][2]:
+            message += str(f"{i} with a score of {scoreboard[userid][2].get(i)}\n")
+        await ctx.message.channel.send(message)
+        return
     @commands.Cog.listener()
     async def on_message(self, message):
         # we do not want the bot to reply to itself
