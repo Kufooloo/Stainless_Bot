@@ -1,7 +1,7 @@
 import discord
 from discord.ext import tasks, commands
 import asyncio
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlsplit, parse_qs
 import pickle
 import os
 import datetime
@@ -83,7 +83,7 @@ class Wordle(commands.Cog):
         if scoreboard.get(userid) is None:
             ctx.message.channel.send("User has no score")
             return
-        average_time = scoreboard[userid][1]/scoreboard[userid][0]
+        average_time = str(datetime.timedelta(seconds=(scoreboard[userid][1]/scoreboard[userid][0])))
         message = str(f"{member.display_name} has participated for {scoreboard[userid][0]} days.\n")
         message += str(f"They have an average time of {average_time} and a total score of {scoreboard[userid][1]}\n")
         message += "They have participated on:\n"
@@ -100,7 +100,10 @@ class Wordle(commands.Cog):
         if message.channel.id == channel_id or message.channel.id == 653758045708615683:
             print("message in #wordle detected")
             if message.content[:5] == 'https':
-                url = urlparse(message.content)
+                url = urlsplit(message.content)
+                if url.netloc != "www.nytimes.com":
+                    await message.reply("This is not a Crossword link dumbass")
+                    return
                 query = parse_qs(url.query)
                 date = query['d'][0]
                 time = query['t'][0]
@@ -109,10 +112,14 @@ class Wordle(commands.Cog):
                 if scoreboard.get(user_id) is None:
                     scoreboard[user_id] = [1, int(time), {date:time}]
                 else:
+                    total_score = 0
                     user_list = scoreboard[user_id]
-                    user_list[0] += 1
-                    user_list[1] += int(time)
                     user_list[2].update({date:time})
+                    user_list[0] = len(user_list[2])
+                    for i in user_list[2]:
+                        total_score += int(user_list[2].get(i))
+                    user_list[1] = total_score
+                    print(user_list[2].values())
 
 
                 await message.reply('Date: ' + date + ' Time: ' + time, mention_author=True)
@@ -126,7 +133,7 @@ class Wordle(commands.Cog):
                 user = await bot.fetch_user(user_id)
                 username = user.display_name
                 print("added point to " + username + " new point total: " + str(points[user_id]))
-                return              
+                return
 
 class Admin(commands.Cog):
     def __init__(self, bot):
