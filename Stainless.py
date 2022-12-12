@@ -55,11 +55,14 @@ class Wordle(commands.Cog):
         #print(scoreboard)
         while len(temp) != 0:
             lowest = list(temp.keys())[0]
+            lowest_avg = temp[lowest][1]/temp[lowest][0]
             #print(type(lowest))
             #print(lowest)
             for i in temp:
-                if temp[i][1] < temp[lowest][1]:
+                i_avg = temp[i][1]/temp[i][0]
+                if i_avg < lowest_avg:
                     lowest = i
+                    lowest_avg = temp[lowest][1]/temp[lowest][0]
             userid = lowest
             #print('userid')
             #print(userid)
