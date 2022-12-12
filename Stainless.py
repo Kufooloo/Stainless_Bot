@@ -5,6 +5,7 @@ from urllib.parse import urlsplit, parse_qs
 import pickle
 import os
 import datetime
+import pandas as pd
 
 #import the token from a file named bot_token
 from config import token, prefix, channel_id
@@ -70,12 +71,10 @@ class Wordle(commands.Cog):
             username = user.display_name
             #print('username')
             #print(username)
-            average_time = scoreboard[lowest][1]/scoreboard[lowest][0]
-            #await ctx.message.channel.send(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
+            average_time = pd.Timedelta(seconds=scoreboard[lowest][1]/scoreboard[lowest][0])
             score = str(scoreboard[lowest][1])
-            message += str(f"{username}: {score} Average Time: {str(datetime.timedelta(seconds=average_time))}\n")
-            print(username + ": " + str(scoreboard[lowest][1]) + " Average time: " + str(datetime.timedelta(seconds=average_time)))
-            temp.pop(lowest) 
+            message += (f"{username}: {score} Average Time: {average_time.floor('S')}\n")
+            temp.pop(lowest)
         await ctx.message.channel.send(message)
         return
     @commands.command()
@@ -86,9 +85,9 @@ class Wordle(commands.Cog):
         if scoreboard.get(userid) is None:
             await ctx.message.channel.send("User has no score")
             return
-        average_time = str(datetime.timedelta(seconds=(scoreboard[userid][1]/scoreboard[userid][0])))
+        average_time = pd.Timedelta(seconds=(scoreboard[userid][1]/scoreboard[userid][0]))
         message = str(f"{member.display_name} has participated for {scoreboard[userid][0]} days.\n")
-        message += str(f"They have an average time of {average_time} and a total score of {scoreboard[userid][1]}\n")
+        message += str(f"They have an average time of {average_time.floor('S')} and a total score of {scoreboard[userid][1]}\n")
         message += "They have participated on:\n"
         for i in scoreboard[userid][2]:
             message += str(f"{i} with a score of {scoreboard[userid][2].get(i)}\n")
