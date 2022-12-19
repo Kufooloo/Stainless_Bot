@@ -6,12 +6,16 @@ import pickle
 import os
 import datetime
 import pandas as pd
+from math import floor
 
 #import the token from a file named bot_token
 from config import token, prefix, channel_id
 start = datetime.datetime.now()
 global scoreboard
 global points
+global days
+global score
+global most_recent_date
 if os.path.getsize('exported_scoreboard.pkl') > 0:
     with open('exported_scoreboard.pkl', 'rb') as f:
         scoreboard = pickle.load(f)
@@ -20,8 +24,53 @@ if os.path.getsize('points.pkl') > 0:
     with open('points.pkl', 'rb') as f:
         points = pickle.load(f)
         f.close()
+
+score = {}
+days = {}
+most_recent_date = ""
+
+
+def print_days():
+    """print the score"""
+    for x in days:
+        print(f"date {x}")
+        temp = days.get(x)
+        for i in temp:
+            print(f"user: {i}")
+        print("-------")
+
+def init_days():
+    """initilizes the days dict"""
+    for x in scoreboard:
+        temp = scoreboard.get(x)
+        for date in temp[2]:
+            if days.get(date) is None:
+                days.update({date: [x]})
+            else:
+                days[date].append(x)
+
+def init_score():
+    """inits the scores dict"""
+    for day in days:
+        players = days.get(day)
+        lowest = players[0]
+        lowest_score = int(scoreboard[lowest][2].get(day))
+        for player in players[1:]:
+            temp_score = int(scoreboard[player][2].get(day))
+            if temp_score < lowest_score:
+                lowest = player
+                lowest_score = temp_score
+        print(f"lowest score was {lowest_score} on {day}")
+        for player in players:
+            points_to_add = lowest_score/int(scoreboard[player][2].get(day)) * 100
+            if score.get(player) is None:
+                score.update({player:points_to_add})
+            else:
+                score[player] += lowest_score/int(scoreboard[player][2].get(day)) * 100
 #dictionary syntax userid: [number of days participating, total time, dict of all dates]
 #points dict : {user_id : points}
+#days with user {date: [[user, score]]}
+#score dict {userid : score}
 
 intents = discord.Intents.default()
 intents.members = True
@@ -44,26 +93,32 @@ class Wordle(commands.Cog):
     @commands.command(aliases=['sb'])
     async def scoreboard(self, ctx):
         """Displays the scoreboard"""
+        global score
         message = ""
         print("Command scoreboard detected.")
-        temp = {}
-        for x in scoreboard:
-            temp[x] = [scoreboard[x][0], scoreboard[x][1], scoreboard[x][2]]
+        temp = score.copy()
+       # for x in scoreboard:
+          #  temp[x] = [scoreboard[x][0], scoreboard[x][1], scoreboard[x][2]]
         print(temp)
+        print("score")
+        print(score)
         #print('temp')
         #print(temp)
         #print('sb')
         #print(scoreboard)
         while len(temp) != 0:
+            #lowest = list(temp.keys())[0]
+            #lowest_avg = temp[lowest][1]/temp[lowest][0]
             lowest = list(temp.keys())[0]
-            lowest_avg = temp[lowest][1]/temp[lowest][0]
+            lowest_score = temp[lowest]
             #print(type(lowest))
             #print(lowest)
             for i in temp:
-                i_avg = temp[i][1]/temp[i][0]
-                if i_avg < lowest_avg:
+                i_score = temp[i]
+                if i_score < lowest_score:
                     lowest = i
-                    lowest_avg = temp[lowest][1]/temp[lowest][0]
+                    lowest_score = temp[lowest]
+            print(lowest)
             userid = lowest
             #print('userid')
             #print(userid)
@@ -72,8 +127,8 @@ class Wordle(commands.Cog):
             #print('username')
             #print(username)
             average_time = pd.Timedelta(seconds=scoreboard[lowest][1]/scoreboard[lowest][0])
-            score = str(scoreboard[lowest][1])
-            message += (f"{username}: {score} Average Time: {average_time.floor('S')}\n")
+            l_score = score.get(lowest)
+            message += (f"{username}: {floor(l_score)} Average Time: {average_time.floor('S')}\n")
             temp.pop(lowest)
         await ctx.message.channel.send(message)
         return
@@ -122,7 +177,13 @@ class Wordle(commands.Cog):
                         total_score += int(user_list[2].get(i))
                     user_list[1] = total_score
                     print(user_list[2].values())
-
+                if most_recent_date is "":
+                    most_recent_date = date
+                if days.get(date) is None:
+                    days.update({date:user_id})
+                else:
+                    days[date].append(user_id)
+                init_score()
 
                 await message.reply('Date: ' + date + ' Time: ' + time, mention_author=True)
                 return
@@ -177,6 +238,9 @@ class Admin(commands.Cog):
 class Export(commands.Cog):
     def __init__(self, bot1):
         self.bot = bot1
+        init_days()
+        init_score()
+        print_days()
         self.export.start()
 
     def cog_unload(self):
@@ -194,6 +258,7 @@ class Export(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def export(self):
+        """exports the scoreboard and points dict"""
     #every 60s exports the scoreboard
         if os.path.exists('exported_scoreboard.pkl'):
             with open('exported_scoreboard.pkl', 'wb') as f:
@@ -209,6 +274,7 @@ class Export(commands.Cog):
                 print(points)
     @export.before_loop
     async def before_my_task(self):
+        """before starting the task open the dicts"""
     #loads the scoreboard from the .pkl file
         if os.path.exists('exported_scoreboard.pkl'):
             if os.path.getsize('exported_scoreboard.pkl') > 0:
@@ -220,7 +286,7 @@ class Export(commands.Cog):
             if os.path.getsize('points.pkl') > 0:
                 print("file is larger than 0")
                 with open('points.pkl', 'rb') as f:
-                    scoreboard = pickle.load(f)
+                    points  = pickle.load(f)
                     f.close()
 
 bot.run(token)
