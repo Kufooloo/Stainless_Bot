@@ -150,6 +150,7 @@ class Wordle(commands.Cog):
         return
     @commands.Cog.listener()
     async def on_message(self, message):
+        global most_recent_date
         # we do not want the bot to reply to itself
         if message.author.id == bot.user.id:
             return
