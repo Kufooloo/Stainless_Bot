@@ -85,7 +85,7 @@ class Wordle(commands.Cog):
                 time = int(query['t'][0])
                 userid = message.author.id
                 self.server.add_score(userid, date, time)
-                await message.reply('Date: ' + date + ' Time: ' + time, mention_author=True)
+                await message.reply(f"Date: {date} Time: {time}", mention_author=True)
                 return
 
     @tasks.loop(seconds=60)

@@ -12,13 +12,11 @@ class Server:
         prev_score = user.add_day(date, time)
         #portion of code that handles days
         if self.days.get(date) is None:
-            day = Day(userid, time)
+            day = Day()
             self.days.update({date:day})
             print("added date")
-        else:
-            day = self.days.get(date)
-            day.add_user(userid, time)
-            print("else")
+        day = self.days.get(date)
+        day.add_user(userid, time)
         print(self.days)
         if prev_score == 0:
             return f"Score: {time} Date: {date}"
@@ -130,9 +128,9 @@ class User:
 
 class Day:
     """Contains information on all users who submitted a score on a day"""
-    def __init__(self, userid, score) -> None:
-        self.users = {userid:score}
-        self.scores = {userid:100}
+    def __init__(self) -> None:
+        self.users = {}
+        self.scores = {}
     def add_user(self, userid: int, time: int) -> None:
         """Adds a user and their score to the day"""
         self.users.update({userid:time})
