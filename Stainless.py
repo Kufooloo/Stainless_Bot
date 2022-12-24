@@ -69,7 +69,6 @@ class Wordle(commands.Cog):
         return
     @commands.Cog.listener()
     async def on_message(self, message):
-        global most_recent_date
         # we do not want the bot to reply to itself
         if message.author.id == bot.user.id:
             return
@@ -82,8 +81,8 @@ class Wordle(commands.Cog):
                     await message.reply("This is not a Crossword link dumbass")
                     return
                 query = parse_qs(url.query)
-                date = query['d'][0]
-                time = query['t'][0]
+                date = str(query['d'][0])
+                time = int(query['t'][0])
                 userid = message.author.id
                 self.server.add_score(userid, date, time)
                 await message.reply('Date: ' + date + ' Time: ' + time, mention_author=True)
@@ -95,7 +94,7 @@ class Wordle(commands.Cog):
         #every 60s exports the scoreboard
         with open('Server_Class.pkl', 'wb') as f:
             pickle.dump(self.server, f)
-            f.close
+            f.close()
             print("Exported Server")
     @export.before_loop
     async def before_my_task(self):
