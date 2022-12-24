@@ -1,5 +1,5 @@
 class Server:
-    """Contains all the users and their information in a server"""
+    """Module handles scores and information for the NYT crossword"""
     def __init__(self) -> None:
         self.users = {}#dict of all the users
         self.days = {}#dict of all the days
