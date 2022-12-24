@@ -1,4 +1,5 @@
 class Server:
+    """Module handles scores and information for the NYT crossword"""
     def __init__(self) -> None:
         self.users = {}#dict of all the users
         self.days = {}#dict of all the days
@@ -53,11 +54,13 @@ class Server:
             total_score += self.days[day].get_score(userid)
         return total_score
     def get_avg_time(self, userid: int) -> int:
+        """Returns the avg time of given user"""
         user = self.users.get(userid)
         if user is None:
             return 0
         return user.get_avg_time()
     def dump(self) -> list:
+        """Returns all the vars of all objects in server as a string"""
         message = []
         message.append("Users: \n")
         for key, contents in self.users.items():
@@ -69,6 +72,7 @@ class Server:
             message.append(f"{vars(contents)}\n")
         return message
     def remove_score(self, userid: int, date: str) -> str:
+        """Removes score from given day and user"""
         user = self.users.get(userid)
         if user is None:
             return "This user does not exist"
@@ -76,7 +80,7 @@ class Server:
         if error_user == 0:
             return "This user did not participate on given day"
         day = self.days.get(date)
-        error = day.remove_score(userid)
+        day.remove_score(userid)
         return f"Success! Removed {date} with time {error_user}"
 
 
@@ -84,6 +88,7 @@ class Server:
 
 
 class User:
+    """Contains information on the user and their score"""
     def __init__(self, userid, num_days, total_time, days_participated) -> None:
         self.userid = userid #userid of the userclass
         self.num_days = num_days #num of days the user has participated in total
@@ -104,6 +109,7 @@ class User:
 
 
     def remove_day(self, date: str) -> int:
+        """Removes given date from the user"""
         contents = self.days_participated.get(date)
         if contents is None:
             return 0
@@ -123,6 +129,7 @@ class User:
         return self.total_time / self.num_days
 
 class Day:
+    """Contains information on all users who submitted a score on a day"""
     def __init__(self, userid, score) -> None:
         self.users = {userid:score}
         self.scores = {userid:100}
