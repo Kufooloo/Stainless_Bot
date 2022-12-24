@@ -133,7 +133,7 @@ class Day:
         self.scores = {}
     def add_user(self, userid: int, time: int) -> None:
         """Adds a user and their score to the day"""
-        self.users.update({userid:time})
+        self.users.update({userid:int(time)})
         self.update()
         return
     def update(self) -> None:
@@ -144,7 +144,7 @@ class Day:
         print(f"first lowest time {lowest_time}")
         for i in self.users:
             test = self.users.get(i)
-            if lowest_time > test:
+            if int(lowest_time) < int(test):
                 lowest = i
                 lowest_time = test
                 print(f"New lowest time {lowest_time}")
