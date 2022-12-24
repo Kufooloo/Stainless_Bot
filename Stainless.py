@@ -134,6 +134,17 @@ class Wordle(commands.Cog):
                 self.server.get_score(userid)
         else:
             await ctx.message.channel.send(f"Failed to locate file {name}")
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def dump(self, ctx):
+        author = ctx.message.author
+        await author.send(f"{vars(self.server)}")
+        for contents in self.server.dump():
+            await author.send(contents)
+        return
+
+
+
 
 
 class Admin(commands.Cog):

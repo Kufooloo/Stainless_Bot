@@ -59,6 +59,18 @@ class Server:
         if user is None:
             return 0
         return user.get_avg_time()
+    def dump(self) -> list:
+        message = []
+        message.append("Users: \n")
+        for key, contents in self.users.items():
+            message.append(f"key: {key} with contents: \n")
+            message.append(f"{vars(contents)}\n")
+        message.append("Days: \n")
+        for key, contents in self.days.items():
+            message.append(f"key: {key} with contents: \n")
+            message.append(f"{vars(contents)}\n")
+        return message
+
 
 
 class User:
