@@ -2,7 +2,7 @@ class Server:
     def __init__(self) -> None:
         self.users = {}#dict of all the users
         self.days = {}#dict of all the days
-    def add_score(self, userid: int, date, time: int):
+    def add_score(self, userid: int, date: str, time: int) -> str:
         """Adds a score to the user"""
         if self.users.get(userid) is None:#create new user
             user = User(userid, 0, 0, {})
@@ -22,7 +22,7 @@ class Server:
         if prev_score == 0:
             return f"Score: {time} Date: {date}"
         return f"Previous Score: {prev_score} New Score: {time} Date: {date}"
-    def get_scoreboard(self):
+    def get_scoreboard(self) -> dict:
         """Returns a dict with the score and then the user ID"""
         score_sort = {}
         for user_id, user in self.users.items():
@@ -33,7 +33,7 @@ class Server:
             print(total_score)
             score_sort.update({total_score:user_id})
         return score_sort
-    def user_score(self, userid):
+    def user_score(self, userid: int) -> str:
         """Returns an individual users score"""
         user = self.users.get(userid)
         if user is None:
@@ -43,7 +43,7 @@ class Server:
         for day, score in day_dict.items():
             message += f"User scored {score} on {day}\n"
         return message
-    def get_score(self, userid):
+    def get_score(self, userid: int) -> int:
         """Returns the ranked score of the User"""
         total_score = 0
         day_list = []
@@ -52,7 +52,7 @@ class Server:
         for day in day_list:
             total_score += self.days[day].get_score(userid)
         return total_score
-    def get_avg_time(self, userid):
+    def get_avg_time(self, userid: int) -> int:
         user = self.users.get(userid)
         if user is None:
             return 0
@@ -68,7 +68,7 @@ class Server:
             message.append(f"key: {key} with contents: \n")
             message.append(f"{vars(contents)}\n")
         return message
-    def remove_score(self, userid, date):
+    def remove_score(self, userid: int, date: str) -> str:
         user = self.users.get(userid)
         if user is None:
             return "This user does not exist"
@@ -89,7 +89,7 @@ class User:
         self.num_days = num_days #num of days the user has participated in total
         self.total_time = total_time #the total amount of time the user has participated in
         self.days_participated = days_participated #a dictionary with all the dates with a score
-    def add_day(self, date, time):
+    def add_day(self, date: str, time: int) -> int:
         """Adds a day to the user"""
         previous_time = self.days_participated.get(date, 0)
         total = self.total_time - previous_time
@@ -103,7 +103,7 @@ class User:
 
 
 
-    def remove_day(self, date):
+    def remove_day(self, date: str) -> int:
         contents = self.days_participated.get(date)
         if contents is None:
             return 0
@@ -111,29 +111,27 @@ class User:
         self.total_time -= int(contents)
         self.days_participated.pop(date)
         return contents
-    def get_info(self):
-        pass
-    def get_num_days(self):
+    def get_num_days(self) -> int:
         return self.num_days
-    def get_total_time(self):
+    def get_total_time(self) -> int:
         return self.total_time
-    def get_days_participated(self):
+    def get_days_participated(self) -> int:
         return self.days_participated
-    def get_days_participated_list(self):
+    def get_days_participated_list(self) -> list:
         return list(self.days_participated.keys())
-    def get_avg_time(self):
+    def get_avg_time(self) -> int:
         return self.total_time / self.num_days
 
 class Day:
     def __init__(self, userid, score) -> None:
         self.users = {userid:score}
         self.scores = {userid:100}
-    def add_user(self, userid, time):
+    def add_user(self, userid: int, time: int) -> None:
         """Adds a user and their score to the day"""
         self.users.update({userid:time})
         self.update()
         return
-    def update(self):
+    def update(self) -> None:
         """Updates the rankings for the day"""
         temp = list(self.users.keys())
         lowest = temp[0]
@@ -149,10 +147,10 @@ class Day:
             score = (lowest_time/self.users.get(i))  * 100
             self.scores.update({i:score})
         return
-    def get_score(self, userid):
+    def get_score(self, userid: int) -> int:
         """Returns the ranked score of the given user"""
         return self.scores.get(userid)
-    def remove_score(self, userid):
+    def remove_score(self, userid: int) -> None:
         self.users.pop(userid)
         self.scores.pop(userid)
         return
