@@ -2,7 +2,7 @@ class Server:
     def __init__(self) -> None:
         self.users = {}#dict of all the users
         self.days = {}#dict of all the days
-    def add_score(self, userid, date, time):
+    def add_score(self, userid: int, date, time: int):
         """Adds a score to the user"""
         if self.users.get(userid) is None:#create new user
             user = User(userid, 0, 0, {})
