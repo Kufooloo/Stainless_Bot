@@ -43,8 +43,6 @@ class Server:
         for day, score in day_dict.items():
             message += f"User scored {score} on {day}\n"
         return message
-    def import_user(self):
-        pass
     def get_score(self, userid):
         """Returns the ranked score of the User"""
         total_score = 0
@@ -70,6 +68,18 @@ class Server:
             message.append(f"key: {key} with contents: \n")
             message.append(f"{vars(contents)}\n")
         return message
+    def remove_score(self, userid, date):
+        user = self.users.get(userid)
+        if user is None:
+            return "This user does not exist"
+        error_user = user.remove_day(date)
+        if error_user == 0:
+            return "This user did not participate on given day"
+        day = self.days.get(date)
+        error = day.remove_score(userid)
+        return f"Success! Removed {date} with time {error_user}"
+
+
 
 
 
@@ -93,8 +103,14 @@ class User:
 
 
 
-    def remove_day(self):
-        pass
+    def remove_day(self, date):
+        contents = self.days_participated.get(date)
+        if contents is None:
+            return 0
+        self.num_days -= 1
+        self.total_time -= int(contents)
+        self.days_participated.pop(date)
+        return contents
     def get_info(self):
         pass
     def get_num_days(self):
@@ -136,3 +152,7 @@ class Day:
     def get_score(self, userid):
         """Returns the ranked score of the given user"""
         return self.scores.get(userid)
+    def remove_score(self, userid):
+        self.users.pop(userid)
+        self.scores.pop(userid)
+        return

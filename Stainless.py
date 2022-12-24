@@ -142,7 +142,12 @@ class Wordle(commands.Cog):
         for contents in self.server.dump():
             await author.send(contents)
         return
-
+    @commands.command(aliases=['rm'])
+    @commands.is_owner()
+    async def remove(self, ctx, member: discord.Member, date: str):
+        userid = member.id
+        await ctx.message.channel.send(self.server.remove_score(userid, date))
+        return
 
 
 
