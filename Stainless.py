@@ -48,8 +48,9 @@ class Wordle(commands.Cog):
             user = await bot.fetch_user(userid)
             avg_time = self.server.get_avg_time(userid)
             math.floor(avg_time)
-            avg_time_str = str(datetime.timedelta(seconds=avg_time))
-            message += f"{user.display_name} has a score of {round(key, 5)} with an average time of {avg_time_str}\n"
+            avg_time_dt = datetime.timedelta(seconds=avg_time)
+            avg_time_str = str(avg_time_dt - datetime.timedelta(microseconds=avg_time_dt.microseconds))
+            message += f"{user.display_name} has a score of {round(key, 2)} with an average time of {avg_time_str}\n"
         await ctx.message.channel.send(message)
         return
     @commands.command()
