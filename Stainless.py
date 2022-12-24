@@ -81,10 +81,10 @@ class Wordle(commands.Cog):
                     await message.reply("This is not a Crossword link dumbass")
                     return
                 query = parse_qs(url.query)
-                date = str(query['d'][0])
-                time = int(query['t'][0])
+                date = query['d'][0]
+                time = query['t'][0]
                 userid = message.author.id
-                self.server.add_score(userid, date, time)
+                self.server.add_score(userid, date, int(time))
                 await message.reply(f"Date: {date} Time: {time}", mention_author=True)
                 return
 
