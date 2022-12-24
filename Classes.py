@@ -149,7 +149,7 @@ class Day:
                 lowest_time = test
                 print(f"New lowest time {lowest_time}")
         for i in self.users:
-            score = (lowest_time/self.users.get(i))  * 100
+            score = (int(lowest_time)/int(self.users.get(i)))  * 100
             self.scores.update({i:score})
         return
     def get_score(self, userid: int) -> int:
