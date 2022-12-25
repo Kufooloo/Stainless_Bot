@@ -29,8 +29,10 @@ class Server:
             output = user.get_total_time()
             print(output)
             total_score = self.get_score(user_id)
+            days_participated = int(user.get_num_days())
+            avg_score = int(total_score) / int(days_participated)
             print(total_score)
-            score_sort.update({total_score:user_id})
+            score_sort.update({avg_score:user_id})
         return score_sort
     def user_score(self, userid: int) -> str:
         """Returns an individual users score"""
@@ -80,6 +82,15 @@ class Server:
         day = self.days.get(date)
         day.remove_score(userid)
         return f"Success! Removed {date} with time {error_user}"
+    def recalc_score(self):
+        """Recalculates the score for all users from data in user class"""
+        for userid, content in self.users.items():
+            days = content.get_days_participated()
+            for day, score in days.items():
+                temp = self.days.get(day)
+                temp.add_user(int(userid), int(score))
+        return
+                
 
 
 
@@ -144,7 +155,7 @@ class Day:
         print(f"first lowest time {lowest_time}")
         for i in self.users:
             test = self.users.get(i)
-            if int(lowest_time) < int(test):
+            if int(lowest_time) > int(test):
                 lowest = i
                 lowest_time = test
                 print(f"New lowest time {lowest_time}")
