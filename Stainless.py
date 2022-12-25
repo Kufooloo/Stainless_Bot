@@ -41,7 +41,7 @@ class Wordle(commands.Cog):
         score_list = self.server.get_scoreboard()
         print(score_list)
         key_list = list(score_list.keys())
-        key_list.sort()
+        key_list.sort(reverse=True)
         print(key_list)
         for key in key_list:
             userid = score_list[key]
@@ -146,6 +146,11 @@ class Wordle(commands.Cog):
     async def remove(self, ctx, member: discord.Member, date: str):
         userid = member.id
         await ctx.message.channel.send(self.server.remove_score(userid, date))
+        return
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def redo_score(self, ctx):
+        self.server.recalc_score()
         return
 
 
