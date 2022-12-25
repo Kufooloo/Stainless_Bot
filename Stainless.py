@@ -54,18 +54,27 @@ class Wordle(commands.Cog):
         await ctx.message.channel.send(message)
         return
     @commands.command()
-    async def score(self, ctx, member: discord.Member):
+    async def score(self, ctx, *args):
         """Gives the score as well as other information on given user\n score @(user)"""
-        userid = member.id
-        print(f"{userid}'s score was requested by {ctx.message.author.display_name}")
-        user = await bot.fetch_user(userid)
-        display_name = user.display_name
-        avg_time = self.server.get_avg_time(userid)
-        math.floor(avg_time)
-        avg_time_str = str(datetime.timedelta(seconds=avg_time))
-        message = f"{display_name} has an average time of {avg_time_str}.\n"
-        message += self.server.user_score(userid)
-        await ctx.message.channel.send(message)
+        author = False
+        if len(args) == 0:
+            args = (ctx.message.author.id,)
+            author = True
+        for item in args:
+            print(item)
+            if author:
+                userid = item
+            else:
+                userid = int(item[2:-1])
+            print(f"{userid}'s score was requested by {ctx.message.author.display_name}")
+            user = await bot.fetch_user(userid)
+            display_name = user.display_name
+            avg_time = self.server.get_avg_time(userid)
+            math.floor(avg_time)
+            avg_time_str = str(datetime.timedelta(seconds=avg_time))
+            message = f"{display_name} has an average time of {avg_time_str}.\n"
+            message += self.server.user_score(userid)
+            await ctx.message.channel.send(message)
         return
     @commands.Cog.listener()
     async def on_message(self, message):
